@@ -6,13 +6,14 @@ boolean wavePresent=false;
 int EnemiesCounter;
 int numberOfEnemies=800;
 Goal earth;
-
+Player newPlayer;
 void setup()
 {
  size(1000, 1000);
  background(0);
  speed = 1.5;
  earth = new Goal(width/2, height/2);
+ newPlayer= new Player(width/2, 300);
  
   for(int i=0; i<numberOfEnemies; i++)
   {
@@ -41,43 +42,36 @@ void setup()
    }
  }
 }
-print(enemies.size());
 }
 // create a subset array from the the origanal array. this subset will represent each wave. 
 ArrayList<Enemy> createWave(ArrayList<Enemy> enemies)
 {
-  print("createWave");
  int waveSize=0;
  int spawnOp=int(random(5)); 
  switch(spawnOp)
  {
   case 0:
-  waveSize =int(random(10));
-   print("use WaveSize");
+  waveSize =int(random(1,10));
   wave = new ArrayList<Enemy>(enemies.subList(0, waveSize));
   enemies.removeAll(wave);
   break;
   case 1:
-  waveSize =int(random(50));
-  print("use WaveSize");
+  waveSize =int(random(10,50));
   wave = new ArrayList<Enemy>(enemies.subList(0, waveSize));
   enemies.removeAll(wave);
   break;
   case 2:
-  waveSize =int(random(100));
-  print("use WaveSize");
+  waveSize =int(random(50,100));
   wave = new ArrayList<Enemy>(enemies.subList(0, waveSize));
   enemies.removeAll(wave);
   break;
   case 3:
-  waveSize =int(random(200));
-  print("use WaveSize");
+  waveSize =int(random(100,200));
   wave = new ArrayList<Enemy>(enemies.subList(0, waveSize));
   enemies.removeAll(wave);
   break;
   default:
-  waveSize =int(random(500));
-  print("use WaveSize");
+  waveSize =int(random(200,500));
   wave = new ArrayList<Enemy>(enemies.subList(0, waveSize));
   enemies.removeAll(wave);
   break;
@@ -85,6 +79,12 @@ ArrayList<Enemy> createWave(ArrayList<Enemy> enemies)
   return wave;
 }
 
+void mouseClicked()
+{
+  println("step 1");
+  PVector target = new PVector(mouseX,mouseY);
+  newPlayer.fire(target);
+}
 
 
 
@@ -92,22 +92,20 @@ ArrayList<Enemy> createWave(ArrayList<Enemy> enemies)
 
 void draw()
 {
+
  background(0);
  if(!wavePresent)
  {
-   print("draw");
    wave = createWave(enemies);
    wavePresent=true;
-   print(wave);
  }
    for(int i=0; i<wave.size();i++)
    {
-     print(i);
      wave.get(i).move(earth.getEarthPosition());
-     print("move");
      wave.get(i).animation();
-     print("annimation");
    }  
-   
+   newPlayer.move();
+   newPlayer.animation();
    earth.animation();
+   if(newPlayer.lasers.size()>0) { println("step 4"); newPlayer.laserDisplay(); }
  }

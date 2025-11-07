@@ -1,36 +1,41 @@
 //-------------------LaserBeam-------------------
 class LaserBeam extends A_Sprite
 {
-  PVector target;
-  PVector pos;
+  PVector velocity;
   
-  LaserBeam(int x, int y, PVector target)
+  LaserBeam(float x, float y, PVector velocity)
   {
     super(x, y);
-    println("step 3");
-    pos = new PVector(x,y);
-    this.target=target;
+    this.velocity=velocity;
   }
 
   void move()
   {
-    println("step 7");
-   PVector dir = PVector.sub(target, pos); //calc vector from pos to target. 
-   dir.normalize(); // Set the length to 1.
-   dir.mult(speed); // set the speed.
-   pos.add(dir); // move
+   this.x += velocity.x;
+   this.y += velocity.y;
   }
 
+  boolean strike(A_Sprite sprite)
+  {
+    
+    float dis = dist(this.x, this.y, sprite.pos.x, sprite.pos.y);
+     if(dis <= sprite.size)
+     {
+       println(sprite.size);
+       println(dis);
+       return true;
+     }
+     return false;
+  }
 
   //Overloaded
   void animation()
   {
-     println("step 8");
     pushMatrix();
-    translate(pos.x,pos.y);
+    translate(this.x,this.y);
     stroke(0, 255, 0);
     strokeWeight(2);
-    ellipse(pos.x,pos.y,20,20);
+    line(velocity.x, velocity.y, velocity.x*2, velocity.y*2);
     popMatrix();
   }
 }

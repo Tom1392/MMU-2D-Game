@@ -14,6 +14,19 @@ class Goal extends A_Sprite
    return pos; 
   }
   
+  boolean collision(Enemy enemy)
+{
+    float dis = dist(pos.x, pos.y, enemy.pos.x, enemy.pos.y);
+     if(dis < enemy.size)
+     {
+       return true;
+     }
+     return false;
+}
+  
+  
+  
+  
    //Animation method.
  void animation()
  {

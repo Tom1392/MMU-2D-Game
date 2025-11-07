@@ -8,7 +8,7 @@ class Player extends A_Sprite
   int angle;
   float rad;
   
-  Player(int x, int y)
+  Player(float x, float y)
   {
     super(x,y);
     pos = new PVector(x,y);
@@ -17,8 +17,7 @@ class Player extends A_Sprite
 
 void laserDisplay()
 {
-  println("step 5");
-  while(lasers.size()>0)
+  if(lasers.size()>0)
   {
    
     for(int i=0; i<lasers.size(); i++)
@@ -29,7 +28,6 @@ void laserDisplay()
       }
       else
       {
-       println("step 6");
       lasers.get(i).move();
       lasers.get(i).animation();
       }
@@ -38,7 +36,15 @@ void laserDisplay()
   return;
 }
 
-
+boolean collision(Enemy enemy)
+{
+    float dis = dist(pos.x, pos.y, enemy.pos.x, enemy.pos.y);
+     if(dis < enemy.size)
+     {
+       return true;
+     }
+     return false;
+}
 
 
  // Move Method
@@ -64,13 +70,12 @@ void laserDisplay()
  //Animation method.
  void animation()
  {
-   println("Player Aimation");
   float r=playerSize;
   if(keyPressed)
   {
     if(key == 'A' || key == 'a') 
     {
-      if(frameCount % 0.5d == 0)
+      if(frameCount % 0.5 == 0)
       {
         if(angle>0)
           {
@@ -109,7 +114,10 @@ void laserDisplay()
  }
  void fire(PVector target)
  {
-   println("step 2");
-   lasers.add(new LaserBeam(int(pos.x),int(pos.y),target));
+   PVector pos = new PVector(this.pos.x, this.pos.y);
+   PVector velocity = PVector.sub(target, pos);
+   float speed=10;
+   velocity.setMag(speed);
+   lasers.add(new LaserBeam(pos.x,pos.y,velocity));
  }
 }

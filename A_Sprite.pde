@@ -3,14 +3,16 @@
 
 class A_Sprite
 {
-  protected float x;
-  protected float y;
-  
+  float x;
+  float y;
+  float size=20;
+  PVector pos;
   
  A_Sprite(float x, float y) 
  {
    this.x = x;
    this.y = y;
+   pos= new PVector(x,y);
  }
 
  

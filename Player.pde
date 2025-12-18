@@ -4,16 +4,14 @@ class Player extends A_Sprite
   ArrayList<LaserBeam> lasers = new ArrayList<>();
   int playerSize=30;
   PVector pos;
-  
   int angle;
-  float rad;
+  int speed=4;
   
   Player(float x, float y)
   {
     super(x,y);
     pos = new PVector(x,y);
   }
-
 
 void laserDisplay()
 {
@@ -36,10 +34,10 @@ void laserDisplay()
   return;
 }
 
-boolean collision(Enemy enemy)
+boolean collision(A_Sprite sprite)
 {
-    float dis = dist(pos.x, pos.y, enemy.pos.x, enemy.pos.y);
-     if(dis < enemy.size)
+    float dis = dist(pos.x, pos.y, sprite.pos.x, sprite.pos.y);
+     if(dis < sprite.size)
      {
        return true;
      }
@@ -103,7 +101,6 @@ boolean collision(Enemy enemy)
     }
   }
     pushMatrix();
-    println(angle);
     translate(pos.x, pos.y);
     rotate(radians(angle));
     fill(0);

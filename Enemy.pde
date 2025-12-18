@@ -4,7 +4,6 @@
 class Enemy extends A_Sprite
 {
   int size=20;
-  PVector pos;
   Enemy(float x, float y)
   {
    super(x,y);

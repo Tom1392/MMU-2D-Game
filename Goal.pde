@@ -24,9 +24,6 @@ class Goal extends A_Sprite
      return false;
 }
   
-  
-  
-  
    //Animation method.
  void animation()
  {

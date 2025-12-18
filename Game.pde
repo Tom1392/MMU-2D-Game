@@ -26,6 +26,7 @@ PImage space;
 Difficulty myVar = Difficulty.MID;
 GameMenu gameMenu = new GameMenu();
 GameState gameState = GameState.SPLASH;
+int gameOverTime;
 //================setup method==========================
 
 
@@ -33,6 +34,7 @@ enum GameState {
   SPLASH,
   MENU,
   GAME,
+  PAUSE,
   GAMEOVER
 }
 
@@ -174,8 +176,9 @@ void gameOver(String result)
     text("Victory", (width/2.5), height/3);
     break;
   }
-
- gameState = GameState.GAMEOVER;
+ //gameOverTime=millis();
+ gameState = GameState.PAUSE;
+ gameOverTime=millis();
 }
 
 
@@ -225,8 +228,61 @@ void setSpeed()
 }
 
 
+
+void mouseClicked()
+{
+  switch(gameState)
+  {
+  case MENU:
+  {
+  if (gameMenu.play.mouseOver)
+  {
+    gameState = GameState.GAME;
+  }
+  else if(gameMenu.easy.mouseOver)
+  {
+    myVar = Difficulty.EASY;
+  }
+  else if(gameMenu.medium.mouseOver)
+  {
+    myVar = Difficulty.MID;
+  }
+   else if(gameMenu.hard.mouseOver)
+  {
+    myVar = Difficulty.HARD;
+  }
+    else if(gameMenu.scores.mouseOver)
+  {
+    return;
+  }
+     else if(gameMenu.quit.mouseOver)
+  {
+    exit();
+  }
+  }
+  break;
+  case GAMEOVER:
+  {
+     if(gameMenu.replay.mouseOver)
+  {
+    resetGame();
+    gameState = GameState.GAME;
+  }
+     else if(gameMenu.menu.mouseOver)
+  {
+    resetGame();
+    gameState = GameState.MENU;
+  }
+  }
+  break;
+}
+}
+
+
+
 void resetGame()
 {
+  print("reset");
   enemies.clear();
   obstacles.clear();
   enemyWave.clear();
@@ -251,27 +307,6 @@ void draw()
     case MENU:
     image(space, 0, 0);
     gameMenu.homeMenu();
-    if (mousePressed)
-    switch(gameMenu.homeButtonSelect())
-    {
-      case 1:
-      gameState = GameState.GAME;
-      break;
-      case 2:
-      myVar = Difficulty.EASY;
-      break;
-      case 3:
-      myVar = Difficulty.MID;
-      break;
-      case 4:
-      myVar = Difficulty.HARD;
-      break;
-      case 5:
-      break;
-      case 6:
-      exit();
-      break;
-    }
     break;
     case GAME:
     setSpeed();
@@ -302,6 +337,8 @@ void draw()
     if (strikeChecking(newPlayer, enemyWave.get(i)))
     {
       enemyWave.remove(e);
+      
+      //add debris to array
       
     switch(myVar) 
     {
@@ -334,11 +371,11 @@ void draw()
     Obstacle o=(Obstacle)obstaclesWave.get(j);
     o.move(newPlayer.pos);
     o.animation();
-    if (strikeChecking(newPlayer, obstaclesWave.get(j)))
-    {
-      obstaclesWave.remove(j);
-      score++;
-    }
+    //if (strikeChecking(newPlayer, obstaclesWave.get(j)))
+    //{
+    //  //obstaclesWave.remove(j);
+    //  //score++;
+    //}
     if (newPlayer.collision(o))
     {
       gameOver("lose");
@@ -362,26 +399,14 @@ void draw()
   }
   gui();
 break;
-
+    case PAUSE:
+      if(millis() - gameOverTime > 1500)
+      {
+        gameState = GameState.GAMEOVER;
+      }
+    break;
     case GAMEOVER:
-    if(mousePressed)
-    {
-    gameMenu.gameOverMenu();
-    if(mousePressed)
-    {
-     switch(gameMenu.gameOverButtonSelect())
-     {
-      case 1:
-      resetGame();
-      gameState = GameState.GAME;
-      break;
-      case 2:
-      resetGame();
-      gameState = GameState.MENU;
-      break;
-     }
-    }
-    }
+      gameMenu.gameOverMenu();
     break;
 }
 }

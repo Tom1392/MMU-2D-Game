@@ -1,13 +1,20 @@
 class GameMenu implements B_menu
 {
+     
+     int gameOverPause=1000;
      int splashStartTime;
      int splashDuration = 2000;
      boolean displaySplash = true;
-     float buttonX=350;
-     float buttonWidth=300;
-     float buttonHieght=50;
-     int buttonCorners=9;
-  
+     Button play = new Button(200, "PLAY");
+     Button easy = new Button(280, "EASY");
+     Button medium = new Button(360, "MEDIUM");
+     Button hard = new Button(440, "HARD");
+     Button scores = new Button(520, "SCORES");
+     Button quit = new Button(600, "QUIT");
+     
+     Button replay = new Button(426, "REPLAY");
+     Button menu = new Button(502, "MENU");
+     
   GameMenu() 
   {
     splashStartTime = millis(); // runs once when object is created
@@ -31,66 +38,74 @@ class GameMenu implements B_menu
    void homeMenu()
  {
    fill(0);
+   stroke(255,255,0);
    rect(width/3, height/5, 333, 500, 9);
-   button(200, "Play");
-   button(280, "EASY");
-   button(360, "MEDIUM");
-   button(440, "HARD");
-   button(520, "SCORES");
-   button(600, "QUIT");
+   play.displayButton(); 
+   easy.displayButton(); 
+   medium.displayButton(); 
+   hard.displayButton(); 
+   scores.displayButton(); 
+   quit.displayButton();
+   
+   play.overButton(); 
+   easy.overButton(); 
+   medium.overButton(); 
+   hard.overButton(); 
+   scores.overButton(); 
+   quit.overButton(); 
  }
  
+//void gameOverPause(int gameOverTime)
+//{
+//  print("pause");
+//   gameOverStartTime=millis();
+//   if(millis() - gameOverStartTime > gameOverPause)
+//   {
+//     print("call GameoVer");
+//     gameOverMenu();
+//   }
+//}
 
-  void button(int buttonY, String txt)
-  {
-    textSize(50);
-    fill(0);
-    rect(buttonX, buttonY, buttonWidth, buttonHieght, buttonCorners);
-    fill(255, 255, 0);
-    text(txt, width/2-140, buttonY+40);
-  }
  
-boolean overButton(float buttonY)  {
-  if (mouseX >= buttonX && mouseX <= buttonX+buttonWidth && mouseY >= buttonY && mouseY <= buttonY+buttonHieght) {
-    return true;
-  } else {
-    return false;
-  }
-}
+
  
-int homeButtonSelect()
-{
-  if(overButton(200))
-  return 1;
-  else if(overButton(280))
-  return 2;
-  else if(overButton(360))
-  return 3;
-  else if(overButton(440))
-  return 4;
-  else if(overButton(520))
-  return 5;
-  else if(overButton(600))
-  return 6;
-  else return 0;
-}
+//int homeButtonSelect()
+//{
+//  if(play.overButton())
+//  return 1;
+//  else if(easy.overButton())
+//  return 2;
+//  else if(medium.overButton())
+//  return 3;
+//  else if(hard.overButton())
+//  return 4;
+//  else if(scores.overButton())
+//  return 5;
+//  else if(quit.overButton())
+//  return 6;
+//  else return 0;
+//}
  
  void gameOverMenu()
  {
+   stroke(255,255,0);
    fill(0);
    rect(width/3, 400, 333, 180, 9);
-   button(426, "REPLAY");
-   button(502, "MENU");
+   replay.displayButton();
+   menu.displayButton();
+   
+   replay.overButton(); 
+   menu.overButton();
  }
  
- int gameOverButtonSelect()
- {
-  if(overButton(426))
-  return 1;
-  else if(overButton(502))
-  return 2;
-  else
-  return 0;
- }
+ //int gameOverButtonSelect()
+ //{
+ // if(replay.overButton())
+ // return 1;
+ // else if(menu.overButton())
+ // return 2;
+ // else
+ // return 0;
+ //}
    void buttonCheck(){}
 }

@@ -24,7 +24,7 @@ class Enemy extends A_Sprite
  //Explode method.
  void explode()
  {
-   
+   //create ann
  }
  //Animation method.
  void animation()

@@ -7,7 +7,10 @@ class Button
   float buttonY;
   String txt;
   boolean mouseOver=false;
-  int mouseOverColour=#E300BD;
+  int purple=#E300BD;
+  int yellow=#FFFF00;
+  int buttonColour=yellow;
+  Boolean difficultySelected=false;
   
   Button(int buttonY, String txt)
   {
@@ -18,14 +21,16 @@ class Button
   //Display Button
   void displayButton()
   {
-    if(mouseOver)
+   
+    if(mouseOver || difficultySelected)
     {
-     stroke(mouseOverColour); 
+      changeButtonColour(true);
     }
-    else 
+    else
     {
-      stroke(255,255,0);
+     changeButtonColour(false); 
     }
+    stroke(buttonColour);
     textSize(50);
     fill(0);
     rect(buttonX, buttonY, buttonWidth, buttonHieght, buttonCorners);
@@ -41,6 +46,18 @@ class Button
   Boolean buttonIsPressed()
   {
    return mouseOver; 
+  }
+  
+  void changeButtonColour(Boolean highLight)
+  {
+    if(highLight)
+    {
+     buttonColour=purple;
+    }
+    else
+    {
+      buttonColour=yellow;
+    }
   }
 
 }

@@ -25,9 +25,9 @@ class GameMenu implements B_menu
    void splashScreen()
    {
      background(0);
-     fill(255,255,255);
+     fill(255,255,0);
      textSize(50);
-     text("Space Battle", (width/2.6), height/3);
+     text("Earth Defender", (width/3), height/3);
      if (millis() - splashStartTime > splashDuration) 
      {
      gameState = GameState.MENU;

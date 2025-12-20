@@ -20,19 +20,24 @@ void laserDisplay()
    
     for(int i=0; i<lasers.size(); i++)
     {
-      if(lasers.get(i).x<0 || lasers.get(i).y<0 || lasers.get(i).x>width || lasers.get(i).y>height)
+      if(lasers.get(i).x<0 || lasers.get(i).y<0 || lasers.get(i).x>width || lasers.get(i).y>(height-100))
       {
        lasers.remove(i); 
       }
       else
       {
       lasers.get(i).move();
-      lasers.get(i).animation();
+      laserAnimation(lasers.get(i));
       }
     }
   }
   return;
 }
+
+  void laserAnimation(LaserBeam l)
+  {
+    l.animation();
+  }
 
 boolean collision(A_Sprite sprite)
 {

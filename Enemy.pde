@@ -4,6 +4,7 @@
 class Enemy extends A_Sprite
 {
   int size=20;
+  
   Enemy(float x, float y)
   {
    super(x,y);
@@ -21,11 +22,13 @@ class Enemy extends A_Sprite
    dir.mult(speed); // set the speed.
    pos.add(dir); // move
  }
+ 
  //Explode method.
  void explode()
  {
    //create ann
  }
+ 
  //Animation method.
  void animation()
  {

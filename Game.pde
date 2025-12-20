@@ -9,6 +9,7 @@ ArrayList<A_Sprite> enemies = new ArrayList<>();
 ArrayList<A_Sprite> enemyWave = new ArrayList<>();
 ArrayList<A_Sprite> obstacles = new ArrayList<>();
 ArrayList<A_Sprite> obstaclesWave = new ArrayList<>();
+ArrayList<A_Sprite> explosions = new ArrayList<>();
 float speed;
 int score;
 int round;
@@ -17,7 +18,7 @@ String roundStr;
 boolean wavePresent=false;
 boolean obstaclesReleased=false;
 int numberOfEnemies=200;
-int numberOfObstacles=50;
+int numberOfObstacles=30;
 String createEnemy = "Enemy";
 String createObstacle = "Obstacle";
 Goal earth;
@@ -56,7 +57,7 @@ void setup()
   newPlayer= new Player(width/2, 300);
   spawn(enemies, numberOfEnemies, createEnemy);
   spawn(obstacles, numberOfObstacles, createObstacle);
-  gui();
+  
 }
 
 
@@ -106,10 +107,10 @@ void spawn(ArrayList<A_Sprite> sprites, int numberOfSprites, String classType)
       {
         if (classType.equals("Enemy"))
         {
-          sprites.add(new Enemy(random(0, width), height+random(50, 200)));
+          sprites.add(new Enemy(random(0, width), (height-100)+random(50, 200)));
         } else if (classType.equals("Obstacle"))
         {
-          sprites.add(new Obstacle(random(0, width), height+random(50, 200)));
+          sprites.add(new Obstacle(random(0, width), (height-100)+random(50, 200)));
         }
         break;
       }
@@ -168,17 +169,18 @@ void gameOver(String result)
     fill(255, 0, 0);
     textSize(50);
     text("Game Over", (width/2.6), height/3);
+    gameState = GameState.PAUSE;
+    gameOverTime=millis();
     break;
 
   case "win":
     fill(255, 0, 0);
     textSize(50);
     text("Victory", (width/2.5), height/3);
+    gameState = GameState.GAMEOVER;
     break;
   }
- //gameOverTime=millis();
- gameState = GameState.PAUSE;
- gameOverTime=millis();
+ 
 }
 
 
@@ -216,13 +218,13 @@ void setSpeed()
     switch(myVar) 
     {
       case EASY:
-        speed= .5;
+        speed= .25;
         break;
       case MID:
-         speed= 1.5;
+         speed= .5;
         break;
       case HARD:
-         speed= 2;
+         speed= 1;
         break;
     }  
 }
@@ -278,6 +280,27 @@ void mouseClicked()
 }
 }
 
+void setDifficultyButtonColour()
+{
+ switch(myVar)
+ {
+ case EASY:
+ gameMenu.easy.difficultySelected=true;
+ gameMenu.medium.difficultySelected=false;
+ gameMenu.hard.difficultySelected=false;
+ break;
+ case MID:
+ gameMenu.easy.difficultySelected=false;
+ gameMenu.medium.difficultySelected=true;
+ gameMenu.hard.difficultySelected=false;
+ break;
+ case HARD:
+ gameMenu.easy.difficultySelected=false;
+ gameMenu.medium.difficultySelected=false;
+ gameMenu.hard.difficultySelected=true;
+ break;
+ }
+}
 
 
 void resetGame()
@@ -288,6 +311,7 @@ void resetGame()
   enemyWave.clear();
   obstaclesWave.clear();
   newPlayer.lasers.clear();
+  explosions.clear();
   score=0;
   round=0;
   spawn(enemies, numberOfEnemies, createEnemy);
@@ -302,16 +326,17 @@ void draw()
   switch (gameState)
   {
     case SPLASH:
+    image(space, 0, 0);
     gameMenu.splashScreen();
     break;
     case MENU:
     image(space, 0, 0);
     gameMenu.homeMenu();
+    setDifficultyButtonColour();
     break;
     case GAME:
     setSpeed();
-  image(space, 0, 0);
-  println(score);
+    image(space, 0, 0);
   if (!wavePresent)
   {
     enemyWave = createWave(enemies, enemyWave, 10);
@@ -326,6 +351,9 @@ void draw()
     e.animation();
     if (newPlayer.collision(e))
     {
+      Explosion explosion = new Explosion(newPlayer.pos.x,newPlayer.pos.y);  
+      explosion.explode();
+      explosions.add(explosion);
       gameOver("lose");
     }
     if (earth.collision(e))
@@ -339,6 +367,9 @@ void draw()
       enemyWave.remove(e);
       
       //add debris to array
+      Explosion explosion = new Explosion(e.pos.x,e.pos.y);  
+      explosion.explode();
+      explosions.add(explosion);
       
     switch(myVar) 
     {
@@ -363,7 +394,15 @@ void draw()
       }
     }
   }
-
+  
+   if (explosions.size()>0)
+  {
+    for(int i=0; i<explosions.size();i++)
+    {
+      Explosion eX=(Explosion)explosions.get(i);
+      eX.explosionDisplay();
+    }
+  }
 
 
   for (int j=obstaclesWave.size()-1; j>=0; j--)
@@ -371,13 +410,20 @@ void draw()
     Obstacle o=(Obstacle)obstaclesWave.get(j);
     o.move(newPlayer.pos);
     o.animation();
+    
+    //-------------------Removed to increase Difficulty-------------------
     //if (strikeChecking(newPlayer, obstaclesWave.get(j)))
     //{
     //  //obstaclesWave.remove(j);
     //  //score++;
     //}
+    //--------------------------------------------------------------------
+    
     if (newPlayer.collision(o))
     {
+      Explosion explosion = new Explosion(newPlayer.pos.x,newPlayer.pos.y);  
+      explosion.explode();
+      explosions.add(explosion);
       gameOver("lose");
     }
   }
@@ -397,12 +443,50 @@ void draw()
       newPlayer.fire(target);
     }
   }
-  gui();
+   gui();
 break;
     case PAUSE:
+    
       if(millis() - gameOverTime > 1500)
       {
         gameState = GameState.GAMEOVER;
+      }
+      else 
+      {
+        image(space, 0, 0);
+        earth.animation();
+  for (int j=obstaclesWave.size()-1; j>=0; j--)
+  {
+    Obstacle o=(Obstacle)obstaclesWave.get(j);
+    o.animation();
+  }
+  
+ for (int i=enemyWave.size()-1; i>=0; i--)
+  {
+    Enemy e=(Enemy)enemyWave.get(i);
+    e.animation();
+  }
+  
+  for (int i=explosions.size()-1; i>=0; i--)
+  {
+    Explosion eX=(Explosion)explosions.get(i);
+    for (int j=eX.debris.size()-1; j>=0; j--)
+    {
+      eX.explosionAnimation(eX.debris.get(j));
+    }
+  }
+  
+    for (int i=newPlayer.lasers.size()-1; i>=0; i--)
+  {
+    LaserBeam l = (LaserBeam)newPlayer.lasers.get(i);
+    newPlayer.laserAnimation(l);
+  }
+  fill(255, 0, 0);
+  textSize(50);
+  text("Game Over", (width/2.6), height/3);
+  Explosion eX=(Explosion)explosions.get(explosions.size()-1);
+  eX.explosionDisplay(); 
+  gui();
       }
     break;
     case GAMEOVER:

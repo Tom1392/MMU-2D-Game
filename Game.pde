@@ -3,8 +3,6 @@
 
 //================Global Variables======================
 
-
-
 ArrayList<A_Sprite> enemies = new ArrayList<>();
 ArrayList<A_Sprite> enemyWave = new ArrayList<>();
 ArrayList<A_Sprite> obstacles = new ArrayList<>();
@@ -27,6 +25,7 @@ PImage space;
 Difficulty myVar = Difficulty.MID;
 GameMenu gameMenu = new GameMenu();
 GameState gameState = GameState.SPLASH;
+Scores highScores;
 int gameOverTime;
 //================setup method==========================
 
@@ -36,7 +35,8 @@ enum GameState {
   MENU,
   GAME,
   PAUSE,
-  GAMEOVER
+  GAMEOVER,
+  SCORES
 }
 
 //Enum for difficulty
@@ -57,14 +57,12 @@ void setup()
   newPlayer= new Player(width/2, 300);
   spawn(enemies, numberOfEnemies, createEnemy);
   spawn(obstacles, numberOfObstacles, createObstacle);
-  
+  highScores = new Scores();
 }
 
-
+//Randomly spawn enemies and obstacles at random postions just of the screen. 
 void spawn(ArrayList<A_Sprite> sprites, int numberOfSprites, String classType)
 {
-
-
   for (int i=0; i<numberOfSprites; i++)
   {
     int spawnPoint = int(random(4));
@@ -74,10 +72,10 @@ void spawn(ArrayList<A_Sprite> sprites, int numberOfSprites, String classType)
       {
         if (classType.equals("Enemy"))
         {
-          sprites.add(new Enemy(-random(50, 200), random(0, height)));
+          sprites.add(new Enemy(-random(50, 400), random(0, height)));
         } else if (classType.equals("Obstacle"))
         {
-          sprites.add(new Obstacle(-random(50, 200), random(0, height)));
+          sprites.add(new Obstacle(-random(50, 400), random(0, height)));
         }
         break;
       }
@@ -85,10 +83,10 @@ void spawn(ArrayList<A_Sprite> sprites, int numberOfSprites, String classType)
       {
         if (classType.equals("Enemy"))
         {
-          sprites.add(new Enemy(width+random(50, 200), random(0, height)));
+          sprites.add(new Enemy(width+random(50, 400), random(0, height)));
         } else if (classType.equals("Obstacle"))
         {
-          sprites.add(new Obstacle(width+random(50, 200), random(0, height)));
+          sprites.add(new Obstacle(width+random(50, 400), random(0, height)));
         }
         break;
       }
@@ -96,10 +94,10 @@ void spawn(ArrayList<A_Sprite> sprites, int numberOfSprites, String classType)
       {
         if (classType.equals("Enemy"))
         {
-          sprites.add(new Enemy(random(0, width), -random(50, 200)));
+          sprites.add(new Enemy(random(0, width), -random(50, 400)));
         } else if (classType.equals("Obstacle"))
         {
-          sprites.add(new Obstacle(random(0, width), -random(50, 200)));
+          sprites.add(new Obstacle(random(0, width), -random(50, 400)));
         }
         break;
       }
@@ -107,10 +105,10 @@ void spawn(ArrayList<A_Sprite> sprites, int numberOfSprites, String classType)
       {
         if (classType.equals("Enemy"))
         {
-          sprites.add(new Enemy(random(0, width), (height-100)+random(50, 200)));
+          sprites.add(new Enemy(random(0, width), (height-100)+random(50, 400)));
         } else if (classType.equals("Obstacle"))
         {
-          sprites.add(new Obstacle(random(0, width), (height-100)+random(50, 200)));
+          sprites.add(new Obstacle(random(0, width), (height-100)+random(50, 400)));
         }
         break;
       }
@@ -120,7 +118,7 @@ void spawn(ArrayList<A_Sprite> sprites, int numberOfSprites, String classType)
 
 //================create enemy wave==========================
 
-// create a subset array from the the origanal array. this subset will represent each wave.
+// create subset array from the the origanal array. this subset represents each wave.
 ArrayList<A_Sprite> createWave(ArrayList<A_Sprite> sprites, ArrayList<A_Sprite> currentWave, int size)
 {
   if (size>sprites.size())
@@ -160,7 +158,7 @@ ArrayList<A_Sprite> createWave(ArrayList<A_Sprite> sprites, ArrayList<A_Sprite> 
 }
 
 
-
+//Print result of game to screen and add and sort score to determine if belongs it top ten.
 void gameOver(String result)
 {
   switch(result)
@@ -180,11 +178,12 @@ void gameOver(String result)
     gameState = GameState.GAMEOVER;
     break;
   }
- 
+      String stringScore = Integer.toString(score);
+      gameMenu.addAndSortScores(highScores ,stringScore);
 }
 
 
-
+//Check is lasers have struck enemies. 
 boolean strikeChecking(Player currentPlayer, A_Sprite currentSprite)
 {
   for (int i = currentPlayer.lasers.size()-1; i>=0; i--)
@@ -212,7 +211,7 @@ void gui()
   text(score, width-200, height-30);
   text("Round: "+round, 50, height-30);
 }
-
+//set speed based on game difficulty
 void setSpeed()
 {
     switch(myVar) 
@@ -230,8 +229,8 @@ void setSpeed()
 }
 
 
-
-void mouseClicked()
+//Check if buttons have been pressed. 
+void mousePressed()
 {
   switch(gameState)
   {
@@ -255,7 +254,7 @@ void mouseClicked()
   }
     else if(gameMenu.scores.mouseOver)
   {
-    return;
+    gameState = GameState.SCORES;
   }
      else if(gameMenu.quit.mouseOver)
   {
@@ -277,9 +276,19 @@ void mouseClicked()
   }
   }
   break;
+  case SCORES:
+  {
+    if(gameMenu.menu.mouseOver)
+  {
+    resetGame();
+    gameState = GameState.MENU;
+  }
+  }
+  break;
 }
 }
 
+//Set the colour of the menu buttons based on if moused over. 
 void setDifficultyButtonColour()
 {
  switch(myVar)
@@ -302,10 +311,9 @@ void setDifficultyButtonColour()
  }
 }
 
-
+//Clear and reset game objects. 
 void resetGame()
 {
-  print("reset");
   enemies.clear();
   obstacles.clear();
   enemyWave.clear();
@@ -323,10 +331,12 @@ void resetGame()
 
 void draw()
 {
+  //Determine the game state. 
   switch (gameState)
   {
     case SPLASH:
     image(space, 0, 0);
+    earth.splashAnimation();
     gameMenu.splashScreen();
     break;
     case MENU:
@@ -337,6 +347,8 @@ void draw()
     case GAME:
     setSpeed();
     image(space, 0, 0);
+     earth.animation();
+  //Is a round already in progress, if not begin round.    
   if (!wavePresent)
   {
     enemyWave = createWave(enemies, enemyWave, 10);
@@ -344,11 +356,13 @@ void draw()
     wavePresent=true;
     round++;
   }
+  //Move and animate enemies.
   for (int i=enemyWave.size()-1; i>=0; i--)
   {
     Enemy e=(Enemy)enemyWave.get(i);
     e.move(earth.getEarthPosition());
     e.animation();
+    //Check player collision.
     if (newPlayer.collision(e))
     {
       Explosion explosion = new Explosion(newPlayer.pos.x,newPlayer.pos.y);  
@@ -356,21 +370,20 @@ void draw()
       explosions.add(explosion);
       gameOver("lose");
     }
+    //check goal collision. 
     if (earth.collision(e))
     {
       gameOver("lose");
     }
 
-
+    //Check if lasers have struck enemies. Create explosion if collision occures. 
     if (strikeChecking(newPlayer, enemyWave.get(i)))
     {
       enemyWave.remove(e);
-      
-      //add debris to array
       Explosion explosion = new Explosion(e.pos.x,e.pos.y);  
       explosion.explode();
       explosions.add(explosion);
-      
+      //Increment score based on difficulty. 
     switch(myVar) 
     {
       case EASY:
@@ -380,10 +393,10 @@ void draw()
          score+=2;
         break;
       case HARD:
-         score+=3;
+         score+=10;
         break;
     } 
-     
+     //Check if the player has destroyed all the enimies and won. 
       if (enemyWave.size()==0)
       {
         wavePresent=false;
@@ -394,7 +407,7 @@ void draw()
       }
     }
   }
-  
+  //animate explosions. 
    if (explosions.size()>0)
   {
     for(int i=0; i<explosions.size();i++)
@@ -404,21 +417,14 @@ void draw()
     }
   }
 
-
+//Move obstacles toword player.
   for (int j=obstaclesWave.size()-1; j>=0; j--)
   {
     Obstacle o=(Obstacle)obstaclesWave.get(j);
     o.move(newPlayer.pos);
     o.animation();
-    
-    //-------------------Removed to increase Difficulty-------------------
-    //if (strikeChecking(newPlayer, obstaclesWave.get(j)))
-    //{
-    //  //obstaclesWave.remove(j);
-    //  //score++;
-    //}
-    //--------------------------------------------------------------------
-    
+
+    //Check for collision between player and obstacles. 
     if (newPlayer.collision(o))
     {
       Explosion explosion = new Explosion(newPlayer.pos.x,newPlayer.pos.y);  
@@ -427,14 +433,15 @@ void draw()
       gameOver("lose");
     }
   }
-
+  //move and animate player. 
   newPlayer.move();
   newPlayer.animation();
-  earth.animation();
+  //move and display lasers toward postion of mouse. 
   if (newPlayer.lasers.size()>0)
   {
     newPlayer.laserDisplay();
   }
+  //If mouse is pressed then fire lasers. 
   if (mousePressed)
   {
     if (frameCount % 3 == 0)
@@ -443,8 +450,10 @@ void draw()
       newPlayer.fire(target);
     }
   }
+  //show GUI
    gui();
 break;
+    //pause animation and stop movement for all objects except player explosion. 
     case PAUSE:
     
       if(millis() - gameOverTime > 1500)
@@ -489,8 +498,13 @@ break;
   gui();
       }
     break;
+    //display game over menu.
     case GAMEOVER:
       gameMenu.gameOverMenu();
+    break;
+    //Dipslay top ten scores. 
+    case SCORES:
+      gameMenu.scores(highScores);
     break;
 }
 }

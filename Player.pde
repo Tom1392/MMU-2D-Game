@@ -1,16 +1,25 @@
+
 //-------------------Player-------------------
 class Player extends A_Sprite
 {
   ArrayList<LaserBeam> lasers = new ArrayList<>();
-  int playerSize=30;
+  int playerSize=35;
   PVector pos;
-  int angle;
-  int speed=4;
-  
+  float speed=4;
+  PImage[] moving;
+  PVector dir;
+  float angle;
   Player(float x, float y)
   {
     super(x,y);
     pos = new PVector(x,y);
+   moving = new PImage[3];
+   moving[0] = loadImage("00_ship.png");
+   moving[1] = loadImage("01_ship.png");
+   moving[2] = loadImage("02_ship.png");
+   moving[0].resize(playerSize,playerSize);
+   moving[1].resize(playerSize,playerSize);
+   moving[2].resize(playerSize,playerSize);
   }
 
 void laserDisplay()
@@ -50,70 +59,44 @@ boolean collision(A_Sprite sprite)
 }
 
 
- // Move Method
- //Overloaded
  void move() 
  {
-   float targetX=map(mouseX, 0,width, 0, width);
-   float targetY=map(mouseY, 0,height,0,height);
-   PVector target = new PVector(targetX,targetY);
+   PVector target = new PVector(mouseX, mouseY);
+   float dis = dist(pos.x, pos.y, target.x, target.y);
+   if(dis < playerSize)
+   {
+     return;
+   } else {
+   float mappedSpeed=map(dis, 0, 50 , 0, 5);
+   speed = constrain(mappedSpeed, 0, 5);
+   //PVector target = new PVector(targetX,targetY);
    PVector dir = PVector.sub(target, pos); //calc vector from pos to target. 
+   angle=dir.heading();
    dir.normalize(); // Set the length to 1.
    dir.mult(speed); // set the speed.
    pos.add(dir); // move
+   }
  }
  
 
  
- //Explode method.
+ 
  void explode()
  {
    
  }
- //Animation method.
+
  void animation()
  {
-  float r=playerSize;
-  if(keyPressed)
-  {
-    if(key == 'A' || key == 'a') 
-    {
-      if(frameCount % 0.5 == 0)
-      {
-        if(angle>0)
-          {
-          angle--;
-          }
-        else
-        {
-        angle=360;  
-        }
-      }
-    }
-    if(key == 'D' || key == 'd') 
-    {
-      if(frameCount % 0.5 == 0)
-        {
-        if(angle<360)
-          {
-           angle++; 
-          }
-        else
-          {
-           angle=0; 
-          }
-      }
-    }
-  }
     pushMatrix();
     translate(pos.x, pos.y);
-    rotate(radians(angle));
-    fill(0);
-    stroke(255);
-    strokeWeight(2);
-    triangle(0, 0-r/2, 0+r/3, 0+r/2, 0-r/3, 0+r/2);
+    rotate(angle+radians(90));
+    int currentFrame = (frameCount / 5) % moving.length;
+    image(moving[currentFrame], 0-playerSize/2, 0-playerSize/2);
     popMatrix();
  }
+ 
+ 
  void fire(PVector target)
  {
    PVector pos = new PVector(this.pos.x, this.pos.y);

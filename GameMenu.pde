@@ -3,8 +3,9 @@ class GameMenu implements B_menu
      
      int gameOverPause=1000;
      int splashStartTime;
-     int splashDuration = 2000;
+     int splashDuration = 3000;
      boolean displaySplash = true;
+     boolean scoresPrinted=false;
      Button play = new Button(200, "PLAY");
      Button easy = new Button(280, "EASY");
      Button medium = new Button(360, "MEDIUM");
@@ -15,6 +16,7 @@ class GameMenu implements B_menu
      Button replay = new Button(426, "REPLAY");
      Button menu = new Button(502, "MENU");
      
+     
   GameMenu() 
   {
     splashStartTime = millis(); // runs once when object is created
@@ -24,10 +26,9 @@ class GameMenu implements B_menu
   
    void splashScreen()
    {
-     background(0);
      fill(255,255,0);
-     textSize(50);
-     text("Earth Defender", (width/3), height/3);
+     textSize(100);
+     text("Earth Defender", (width/5), height/3);
      if (millis() - splashStartTime > splashDuration) 
      {
      gameState = GameState.MENU;
@@ -55,39 +56,10 @@ class GameMenu implements B_menu
    quit.overButton(); 
  }
  
-//void gameOverPause(int gameOverTime)
-//{
-//  print("pause");
-//   gameOverStartTime=millis();
-//   if(millis() - gameOverStartTime > gameOverPause)
-//   {
-//     print("call GameoVer");
-//     gameOverMenu();
-//   }
-//}
-
- 
-
- 
-//int homeButtonSelect()
-//{
-//  if(play.overButton())
-//  return 1;
-//  else if(easy.overButton())
-//  return 2;
-//  else if(medium.overButton())
-//  return 3;
-//  else if(hard.overButton())
-//  return 4;
-//  else if(scores.overButton())
-//  return 5;
-//  else if(quit.overButton())
-//  return 6;
-//  else return 0;
-//}
  
  void gameOverMenu()
  {
+   menu.buttonY=502;
    stroke(255,255,0);
    fill(0);
    rect(width/3, 400, 333, 180, 9);
@@ -98,14 +70,41 @@ class GameMenu implements B_menu
    menu.overButton();
  }
  
- //int gameOverButtonSelect()
- //{
- // if(replay.overButton())
- // return 1;
- // else if(menu.overButton())
- // return 2;
- // else
- // return 0;
- //}
-   void buttonCheck(){}
+ void scores(Scores scores)
+ {
+   scoresPrinted=false; 
+   
+   if(!scoresPrinted)
+   {
+   int label=0;
+   String space="      ";
+   menu.buttonY=610;
+   fill(0);
+   stroke(255,255,0);
+   rect(width/3, height/5, 333, 500, 9);
+   fill(255, 255, 0);
+   textSize(38);
+   text("TOP TEN SCORES", width/2-140, 230); 
+   for (int i = 0 ; i < scores.topTenScores.length; i++) 
+   {
+   textSize(25);
+   label=i+1; 
+   if(label==10)
+   {
+    space="   "; 
+   }
+   text("["+label+"]"+space+scores.topTenScores[i], 380, 290+(i*30));
+   }
+   scoresPrinted=true;
+   }
+   menu.displayButton();
+   menu.overButton();
+ }
+ 
+ 
+  void addAndSortScores(Scores scores, String newScore)
+  {
+   scores.addScore(newScore);
+   scores.sortScores();
+  }
 }

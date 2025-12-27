@@ -25,7 +25,6 @@ class LaserBeam extends A_Sprite
      return false;
   }
 
-  //Overloaded
   void animation()
   {
     pushMatrix();

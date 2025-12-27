@@ -5,7 +5,7 @@ class A_Sprite
 {
   float x;
   float y;
-  float size=20;
+  float size;
   PVector pos;
   
  A_Sprite(float x, float y) 
@@ -16,36 +16,8 @@ class A_Sprite
  }
 
  
- // ----------Getters and setters----------- 
- 
- float getX()
- {
-   return x;
- }
- 
-  float getY()
- {
-   return y;
- }
- 
- void setX(float x)
- {
-   this.x = x;
- }
- 
-  void setY(float y)
- {
-   this.y = y;
- }
- 
- 
  // Move Method
  void move() 
- {
-   
- }
- //Explode method.
- void explode()
  {
    
  }
@@ -54,4 +26,14 @@ class A_Sprite
  {
    
  }
+ 
+boolean collision(A_Sprite sprite)
+{
+    float dis = dist(pos.x, pos.y, sprite.pos.x, sprite.pos.y);
+     if(dis < sprite.size)
+     {
+       return true;
+     }
+     return false;
+}
 }

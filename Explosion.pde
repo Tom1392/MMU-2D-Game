@@ -10,8 +10,6 @@ class Explosion extends A_Sprite
   } 
   
   
-  
-  
   void explode()
   {
    for(int i=10; i>0;i--)

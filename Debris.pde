@@ -23,7 +23,6 @@ class Debris extends A_Sprite
   }
   
 
-  //Overloaded
   void animation()
   {
    stroke(#FF7300);
